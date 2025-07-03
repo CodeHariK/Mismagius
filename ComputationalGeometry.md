@@ -35,6 +35,8 @@ Polygon Intersection
 * https://zingl.github.io/bresenham.html
 * https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
 * [Bresenham's Line Algorithm - Demystified Step by Step](https://www.youtube.com/watch?v=CceepU1vIKo)
+* [Triangle Rasterization](https://www.youtube.com/watch?v=k5wtuKWmV48)
+* https://kristoffer-dyrkorn.github.io/triangle-rasterizer/
 * [The Midpoint Circle Algorithm Explained Step by Step](https://www.youtube.com/watch?v=hpiILbMkF9w)
 
 * [Finding the Area of Polygons](https://www.youtube.com/watch?v=lWU48Nu-DJI)

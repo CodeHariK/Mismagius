@@ -1,7 +1,5 @@
 # Game Rendering
 
-* https://graphicscodex.com/chapters.xml
-* [Graphics Codex
 ](https://www.youtube.com/playlist?list=PLsYRP8pwiVX_H_BbnBWG8M1iPzwqEmFNj)
 
 * https://google.github.io/filament/Filament.md.html
