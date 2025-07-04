@@ -2,6 +2,8 @@ package main
 
 import "core:fmt"
 import "core:image/tga"
+import "core:math"
+import "core:math/rand"
 import "core:os"
 import "core:strconv"
 
@@ -188,13 +190,20 @@ read_obj :: proc(filename: string) -> (Model_Data, bool) #no_bounds_check {
 		true
 }
 
-
-render_wireframe :: proc(model: Model_Data, img: ^tga.Image, color: [3]u8) {
+render_wireframe :: proc(
+	using model: Model_Data,
+	img: ^tga.Image,
+	zbuffer: ^[dynamic]f32,
+	color: ^[3]u8,
+) {
 	// Simple orthographic projection: just use x and y, scale to image size
 	scale_x := f32(img.width) / 30.0
 	scale_y := f32(img.height) / 30.0
 	offset_x := f32(img.width) / 2.0
 	offset_y := f32(img.height) / 10.0
+
+	// Light direction (normalized)
+	light_dir := [3]f32{0, 0, -1.4}
 
 	num_faces := len(model.indices_positions) / 3
 	for i := 0; i < num_faces; i += 1 {
@@ -208,23 +217,77 @@ render_wireframe :: proc(model: Model_Data, img: ^tga.Image, color: [3]u8) {
 		v1 := model.vertex_positions[i1]
 		v2 := model.vertex_positions[i2]
 
-		// Project to 2D (orthographic, assuming model is centered in [-1,1])
-		p0 := Vec2i {
-			x = int(v0[0] * scale_x + offset_x),
-			y = int(v0[1] * scale_y + offset_y),
+		// Compute face normal (cross product of two edges)
+		edge1 := [3]f32{v1[0] - v0[0], v1[1] - v0[1], v1[2] - v0[2]}
+		edge2 := [3]f32{v2[0] - v0[0], v2[1] - v0[1], v2[2] - v0[2]}
+		normal := [3]f32 {
+			edge1[1] * edge2[2] - edge1[2] * edge2[1],
+			edge1[2] * edge2[0] - edge1[0] * edge2[2],
+			edge1[0] * edge2[1] - edge1[1] * edge2[0],
 		}
-		p1 := Vec2i {
-			x = int(v1[0] * scale_x + offset_x),
-			y = int(v1[1] * scale_y + offset_y),
-		}
-		p2 := Vec2i {
-			x = int(v2[0] * scale_x + offset_x),
-			y = int(v2[1] * scale_y + offset_y),
+		// Normalize normal
+		norm_len := math.sqrt(
+			normal[0] * normal[0] + normal[1] * normal[1] + normal[2] * normal[2],
+		)
+		if norm_len > 0 {
+			normal[0] /= norm_len
+			normal[1] /= norm_len
+			normal[2] /= norm_len
 		}
 
-		// Draw triangle edges
-		draw_line(img, p0.x, p0.y, p1.x, p1.y, color[0], color[1], color[2])
-		draw_line(img, p1.x, p1.y, p2.x, p2.y, color[0], color[1], color[2])
-		draw_line(img, p2.x, p2.y, p0.x, p0.y, color[0], color[1], color[2])
+		// Dot product with light direction
+		intensity := normal[0] * light_dir[0] + normal[1] * light_dir[1] + normal[2] * light_dir[2]
+		if intensity < 0 {
+			intensity = 0
+		}
+
+		// Project to 2D and keep z for depth
+		p0 := Vec3f {
+			x = v0[0] * scale_x + offset_x,
+			y = v0[1] * scale_y + offset_y,
+			z = v0[2],
+		}
+		p1 := Vec3f {
+			x = v1[0] * scale_x + offset_x,
+			y = v1[1] * scale_y + offset_y,
+			z = v1[2],
+		}
+		p2 := Vec3f {
+			x = v2[0] * scale_x + offset_x,
+			y = v2[1] * scale_y + offset_y,
+			z = v2[2],
+		}
+
+		// Choose color: use provided or random, then scale by intensity
+		c := [3]u8{0, 0, 0}
+		if color != nil {
+			c = color^
+		} else {
+			c = [3]u8{u8(rand.int63_max(255)), u8(rand.int63_max(255)), u8(rand.int63_max(255))}
+		}
+		shaded := [3]u8 {
+			u8(clamp(f32(c[0]) * intensity, 0, 255)),
+			u8(clamp(f32(c[1]) * intensity, 0, 255)),
+			u8(clamp(f32(c[2]) * intensity, 0, 255)),
+		}
+
+		if (zbuffer != nil) {
+			drawTriangleFilledZ(
+				[3]Vec3f{p0, p1, p2},
+				zbuffer,
+				img,
+				shaded[0],
+				shaded[1],
+				shaded[2],
+			)
+		} else {
+			drawTriangleFilled([3]Vec3f{p0, p1, p2}, img, shaded[0], shaded[1], shaded[2])
+		}
 	}
+}
+
+clamp :: proc(x, min, max: f32) -> f32 {
+	if x < min {return min}
+	if x > max {return max}
+	return x
 }

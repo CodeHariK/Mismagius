@@ -1,6 +1,7 @@
 package main
 
 import "core:bytes"
+import "core:math"
 
 import "core:fmt"
 import "core:image"
@@ -8,7 +9,10 @@ import "core:image/tga"
 
 import "core:time"
 
-set_pixel :: proc(img: ^tga.Image, x, y: int, r, g, b: u8) {
+set_pixel :: proc(img: ^tga.Image, _x, _y: f32, r, g, b: u8) {
+	x := int(_x)
+	y := int(_y)
+
 	// Bounds check
 	if x < 0 || x >= img.width || y < 0 || y >= img.height {
 		return
@@ -50,7 +54,7 @@ draw_line :: proc(img: ^tga.Image, x0, y0, x1, y1: int, r, g, b: u8) {
 	y := y0
 
 	for {
-		set_pixel(img, x, y, r, g, b)
+		set_pixel(img, f32(x), f32(y), r, g, b)
 		if x == x1 && y == y1 {
 			break
 		}
@@ -66,7 +70,7 @@ draw_line :: proc(img: ^tga.Image, x0, y0, x1, y1: int, r, g, b: u8) {
 	}
 }
 
-draw_line2 :: proc(img: ^tga.Image, x0, y0, x1, y1: int, r, g, b: u8) {
+draw_line2 :: proc(img: ^tga.Image, x0, y0, x1, y1: f32, r, g, b: u8) {
 	// Copy parameters to mutable locals
 	_x0 := x0
 	_y0 := y0
@@ -88,9 +92,9 @@ draw_line2 :: proc(img: ^tga.Image, x0, y0, x1, y1: int, r, g, b: u8) {
 	dx := _x1 - _x0
 	dy := _y1 - _y0
 	derror2 := abs(dy) * 2
-	error2 := 0
+	error2 := f32(0)
 	y := _y0
-	y_step := 1
+	y_step := f32(1)
 	if _y1 < _y0 {
 		y_step = -1
 	}
@@ -141,8 +145,4 @@ benchmark_draw_lines :: proc() {
 	}
 	elapsed2 := time.since(start)
 	fmt.println("draw_line2: ", elapsed2)
-}
-
-Vec2i :: struct {
-	x, y: int,
 }
