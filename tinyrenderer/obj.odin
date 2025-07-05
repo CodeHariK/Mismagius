@@ -3,291 +3,148 @@ package main
 import "core:fmt"
 import "core:image/tga"
 import "core:math"
+import "core:math/linalg/glsl"
 import "core:math/rand"
 import "core:os"
 import "core:strconv"
+import "core:strings"
 
-Vec2 :: [2]f32
-Vec3 :: [3]f32
-
-Model_Data :: struct {
-	vertex_positions:  []Vec3,
-	vertex_normals:    []Vec3,
-	vertex_uvs:        []Vec2,
-	indices_positions: []i32,
-	indices_normals:   []i32,
-	indices_uvs:       []i32,
+Face :: struct {
+	verts:   [3]int,
+	uvs:     [3]int,
+	normals: [3]int,
 }
 
-free_model_data :: proc(using model_data: Model_Data) {
-	// free(vertex_positions)
-	// free(vertex_normals)
-	// free(vertex_uvs)
-	// free(indices_positions)
-	// free(indices_normals)
-	// free(indices_uvs)
+Model :: struct {
+	verts: [dynamic]Vec3f,
+	uvs:   [dynamic]Vec2f,
+	faces: [dynamic]Face,
 }
 
-print_model_data :: proc(using model_data: Model_Data, N: int) {
-	for i := 0; i < N; i += 1 {
-		v := model_data.vertex_positions[i]
-		fmt.printf("v[%d]: %v\n", i, v)
-	}
-	for i := 0; i < N; i += 1 {
-		v := model_data.vertex_normals[i]
-		fmt.printf("vn[%d]: %v\n", i, v)
-	}
-	for i := 0; i < N; i += 1 {
-		v := model_data.vertex_uvs[i]
-		fmt.printf("vt[%d]: %v\n", i, v)
-	}
-	for i := 0; i < N; i += 1 {
-		fmt.printf(
-			"fv[%d]: %d %d %d\n",
-			i,
-			model_data.indices_positions[3 * i + 0],
-			model_data.indices_positions[3 * i + 1],
-			model_data.indices_positions[3 * i + 2],
-		)
-	}
-	for i := 0; i < N; i += 1 {
-		fmt.printf(
-			"fvn[%d]: %d %d %d\n",
-			i,
-			model_data.indices_normals[3 * i + 0],
-			model_data.indices_normals[3 * i + 1],
-			model_data.indices_normals[3 * i + 2],
-		)
-	}
-	for i := 0; i < N; i += 1 {
-		fmt.printf(
-			"fvt[%d]: %d %d %d\n",
-			i,
-			model_data.indices_uvs[3 * i + 0],
-			model_data.indices_uvs[3 * i + 1],
-			model_data.indices_uvs[3 * i + 2],
-		)
-	}
-}
+load_model :: proc(filename: string) -> Model {
+	verts: [dynamic]Vec3f
+	uvs: [dynamic]Vec2f
+	faces: [dynamic]Face
 
-stream: string
+	data, ok := os.read_entire_file(filename)
 
-is_whitespace :: #force_inline proc(c: u8) -> bool {
-	switch c {
-	case ' ', '\t', '\n', '\v', '\f', '\r', '/':
-		return true
+	if !ok {
+		fmt.println("Failed to open file")
+		return Model{}
 	}
-	return false
-}
-
-skip_whitespace :: #force_inline proc() #no_bounds_check {
-	for stream != "" && is_whitespace(stream[0]) do stream = stream[1:]
-}
-
-skip_line :: proc() #no_bounds_check {
-	N := len(stream)
-	for i := 0; i < N; i += 1 {
-		if stream[0] == '\r' || stream[0] == '\n' {
-			skip_whitespace()
-			return
-		}
-		stream = stream[1:]
-	}
-}
-
-next_word :: proc() -> string #no_bounds_check {
-	skip_whitespace()
-
-	for i := 0; i < len(stream); i += 1 {
-		if is_whitespace(stream[i]) || i == len(stream) - 1 {
-			current_word := stream[0:i]
-			stream = stream[i + 1:]
-			return current_word
-		}
-	}
-	return ""
-}
-
-// @WARNING! This assumes the obj file is well formed. 
-//
-//   Each v, vn line has to have at least 3 elements. Every element after the third is discarded
-//   Each vt line has to have at least 2 elements. Every element after the second is discarded
-//   Each f line has to have at least 9 elements. Every element after the ninth is discarded
-//
-//   Note that we only support files where the faces are specified as A/A/A B/B/B C/C/C
-//   Note also that '/' is regarded as whitespace, to simplify the face parsing
-read_obj :: proc(filename: string) -> (Model_Data, bool) #no_bounds_check {
-	to_f32 :: proc(str: string) -> f32 {
-		value, _ := strconv.parse_f32(str)
-		return value
-	}
-	to_i32 :: proc(str: string) -> i32 {
-		value, _ := strconv.parse_int(str)
-		return cast(i32)value
-	}
-
-	data, status := os.read_entire_file(filename)
-	if !status do return Model_Data{}, false
-	// defer free(data)
-
-	vertex_positions: [dynamic]Vec3
-	vertex_normals: [dynamic]Vec3
-	vertex_uvs: [dynamic]Vec2
-	indices_positions: [dynamic]i32
-	indices_normals: [dynamic]i32
-	indices_uvs: [dynamic]i32
-
-	stream = string(data)
-	for stream != "" {
-		current_word := next_word()
-
-		switch current_word {
-		case "v":
-			append(
-				&vertex_positions,
-				Vec3{to_f32(next_word()), to_f32(next_word()), to_f32(next_word())},
-			)
-		case "vn":
-			append(
-				&vertex_normals,
-				Vec3{to_f32(next_word()), to_f32(next_word()), to_f32(next_word())},
-			)
-		case "vt":
-			append(&vertex_uvs, Vec2{to_f32(next_word()), to_f32(next_word())})
-		case "f":
-			indices: [9]i32
-			for i := 0; i < 9; i += 1 {
-				indices[i] = to_i32(next_word()) - 1
+	lines := strings.split(string(data), "\n")
+	for line in lines {
+		if strings.has_prefix(line, "v ") {
+			parts := strings.fields(line)
+			if len(parts) >= 4 {
+				x, _ := strconv.parse_f32(parts[1])
+				y, _ := strconv.parse_f32(parts[2])
+				z, _ := strconv.parse_f32(parts[3])
+				v := Vec3f{x, y, z}
+				append(&verts, v)
 			}
-			append(&indices_positions, indices[0], indices[3], indices[6])
-			append(&indices_normals, indices[1], indices[4], indices[7])
-			append(&indices_uvs, indices[2], indices[5], indices[8])
+		} else if strings.has_prefix(line, "vt ") {
+			parts := strings.fields(line)
+			if len(parts) >= 3 {
+				u, _ := strconv.parse_f32(parts[1])
+				v, _ := strconv.parse_f32(parts[2])
+				append(&uvs, Vec2f{u, v})
+			}
+		} else if strings.has_prefix(line, "f ") {
+			parts := strings.fields(line)
+			if len(parts) >= 4 {
+				face_verts: [3]int
+				face_uv: [3]int
+				face_normals: [3]int
+				for i in 0 ..< 3 {
+					face := strings.split(parts[i + 1], "/")
+					v_idx, _ := strconv.parse_int(face[0])
+					vt_idx, _ := strconv.parse_int(face[1])
+					vn_idx, _ := strconv.parse_int(face[2])
+					face_verts[i] = v_idx - 1
+					face_uv[i] = vt_idx - 1
+					face_normals[i] = vn_idx - 1
+				}
+				append(&faces, Face{face_verts, face_uv, face_normals})
+			}
 		}
-		skip_line()
 	}
-
-	fmt.printf(
-		"vertex positions = %d, vertex normals = %d, vertex uvs = %d\n",
-		len(vertex_positions),
-		len(vertex_normals),
-		len(vertex_uvs),
-	)
-	fmt.printf(
-		"indices positions = %d, indices normals = %d, indices uvs = %d\n",
-		len(indices_positions),
-		len(indices_normals),
-		len(indices_uvs),
-	)
-
-	return Model_Data {
-			vertex_positions[:],
-			vertex_normals[:],
-			vertex_uvs[:],
-			indices_positions[:],
-			indices_normals[:],
-			indices_uvs[:],
-		},
-		true
+	fmt.printf("# v# %d f# %d vt# %d\n", len(verts), len(faces), len(uvs))
+	return Model{verts, uvs, faces}
 }
 
-render_wireframe :: proc(
-	using model: Model_Data,
+world2screen :: proc(v: Vec3f, width, height: int, scale: Vec3f, offset: Vec3f) -> Vec3f {
+	return Vec3f {
+		f32(int((v.x + 1.0) * f32(width) * scale.x / 2.0 + 0.5 + offset.x)),
+		f32(int((v.y + 1.0) * f32(height) * scale.y / 2.0 + 0.5 + offset.y)),
+		v.z,
+	}
+}
+
+renderModel :: proc(
+	using model: Model,
 	img: ^tga.Image,
+	texture: ^tga.Image,
 	zbuffer: ^[dynamic]f32,
-	color: ^[3]u8,
+	filled: bool,
+	light_dir: ^Vec3f,
+	scale: Vec3f,
+	offset: Vec3f,
+	color: ^Color,
 ) {
-	// Simple orthographic projection: just use x and y, scale to image size
-	scale_x := f32(img.width) / 30.0
-	scale_y := f32(img.height) / 30.0
-	offset_x := f32(img.width) / 2.0
-	offset_y := f32(img.height) / 10.0
-
-	// Light direction (normalized)
-	light_dir := [3]f32{0, 0, -1.4}
-
-	num_faces := len(model.indices_positions) / 3
-	for i := 0; i < num_faces; i += 1 {
-		// Get indices for this triangle
-		i0 := model.indices_positions[3 * i + 0]
-		i1 := model.indices_positions[3 * i + 1]
-		i2 := model.indices_positions[3 * i + 2]
-
-		// Get vertex positions
-		v0 := model.vertex_positions[i0]
-		v1 := model.vertex_positions[i1]
-		v2 := model.vertex_positions[i2]
-
-		// Compute face normal (cross product of two edges)
-		edge1 := [3]f32{v1[0] - v0[0], v1[1] - v0[1], v1[2] - v0[2]}
-		edge2 := [3]f32{v2[0] - v0[0], v2[1] - v0[1], v2[2] - v0[2]}
-		normal := [3]f32 {
-			edge1[1] * edge2[2] - edge1[2] * edge2[1],
-			edge1[2] * edge2[0] - edge1[0] * edge2[2],
-			edge1[0] * edge2[1] - edge1[1] * edge2[0],
-		}
-		// Normalize normal
-		norm_len := math.sqrt(
-			normal[0] * normal[0] + normal[1] * normal[1] + normal[2] * normal[2],
-		)
-		if norm_len > 0 {
-			normal[0] /= norm_len
-			normal[1] /= norm_len
-			normal[2] /= norm_len
+	for i in 0 ..< len(model.faces) {
+		face := model.faces[i]
+		pts := [3]Vec3f{}
+		for j in 0 ..< 3 {
+			pts[j] = world2screen(model.verts[face.verts[j]], img.width, img.height, scale, offset)
 		}
 
-		// Dot product with light direction
-		intensity := normal[0] * light_dir[0] + normal[1] * light_dir[1] + normal[2] * light_dir[2]
-		if intensity < 0 {
-			intensity = 0
-		}
+		local0 := model.verts[face.verts[0]]
+		local1 := model.verts[face.verts[1]]
+		local2 := model.verts[face.verts[2]]
 
-		// Project to 2D and keep z for depth
-		p0 := Vec3f {
-			x = v0[0] * scale_x + offset_x,
-			y = v0[1] * scale_y + offset_y,
-			z = v0[2],
-		}
-		p1 := Vec3f {
-			x = v1[0] * scale_x + offset_x,
-			y = v1[1] * scale_y + offset_y,
-			z = v1[2],
-		}
-		p2 := Vec3f {
-			x = v2[0] * scale_x + offset_x,
-			y = v2[1] * scale_y + offset_y,
-			z = v2[2],
+		uv0 := model.uvs[face.uvs[0]]
+		uv1 := model.uvs[face.uvs[1]]
+		uv2 := model.uvs[face.uvs[2]]
+
+		intensity := f32(1)
+		if (light_dir != nil) {
+			// Compute face normal (cross product of two edges)
+			edge1 := Vec3f{local1.x - local0.x, local1.y - local0.y, local1.z - local0.z}
+			edge2 := Vec3f{local2.x - local0.x, local2.y - local0.y, local2.z - local0.z}
+			normal := glsl.cross_vec3(edge1, edge2)
+			normal = glsl.normalize(normal)
+
+			intensity = glsl.dot(normal, light_dir^)
+			if intensity < 0 {
+				intensity = 0
+			}
 		}
 
 		// Choose color: use provided or random, then scale by intensity
-		c := [3]u8{0, 0, 0}
+		c := Color{0, 0, 0}
 		if color != nil {
 			c = color^
 		} else {
-			c = [3]u8{u8(rand.int63_max(255)), u8(rand.int63_max(255)), u8(rand.int63_max(255))}
-		}
-		shaded := [3]u8 {
-			u8(clamp(f32(c[0]) * intensity, 0, 255)),
-			u8(clamp(f32(c[1]) * intensity, 0, 255)),
-			u8(clamp(f32(c[2]) * intensity, 0, 255)),
+			c = Color{u8(rand.int63_max(255)), u8(rand.int63_max(255)), u8(rand.int63_max(255))}
 		}
 
-		if (zbuffer != nil) {
-			drawTriangleFilledZ(
-				[3]Vec3f{p0, p1, p2},
-				zbuffer,
-				img,
-				shaded[0],
-				shaded[1],
-				shaded[2],
-			)
+		if (filled) {
+			if (zbuffer != nil) {
+				drawTriangleFilled(
+					pts,
+					zbuffer,
+					img,
+					texture,
+					&[3]Vec2f{uv0, uv1, uv2},
+					intensity,
+					c,
+				)
+			} else {
+				drawTriangleFilled(pts, nil, img, texture, &[3]Vec2f{uv0, uv1, uv2}, intensity, c)
+			}
 		} else {
-			drawTriangleFilled([3]Vec3f{p0, p1, p2}, img, shaded[0], shaded[1], shaded[2])
+			drawTriangle(img, zbuffer, pts, c)
 		}
 	}
-}
-
-clamp :: proc(x, min, max: f32) -> f32 {
-	if x < min {return min}
-	if x > max {return max}
-	return x
 }
