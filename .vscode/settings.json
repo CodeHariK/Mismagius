@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "*.mdx": "markdown",
+        "*.rs": "rust",
+        "__config": "cpp",
+        "vector": "cpp"
+    }
+}

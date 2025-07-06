@@ -14,13 +14,21 @@ import "core:time"
 Color :: struct {
 	r, g, b: u8,
 }
+Vec4f :: glsl.vec4
 Vec3f :: glsl.vec3
 Vec2f :: glsl.vec2
+Mat4 :: glsl.mat4
 
 main :: proc() {
+
+	start := time.now()
+
 	tgasave()
 
 	// benchmark_draw_lines()
+
+	elapsed := time.since(start)
+	fmt.printf("Main execution time: %v\n", elapsed)
 }
 
 tgasave :: proc() {
@@ -62,18 +70,21 @@ tgasave :: proc() {
 		fmt.panicf("%v", err)
 	}
 
+	light := &Vec3f{0, 0, 1}
+
 	model := load_model(assetpath)
 
 	renderModel(
 		model,
 		&img,
 		texture,
-		nil,
+		&zbuffer,
 		true,
-		nil, //&Vec3f{0, 0, 4},
+		light,
 		Vec3f{.5, .5, 1},
 		Vec3f{0, 400, 0},
 		&Color{200, 150, 250},
+		false,
 	)
 	renderModel(
 		model,
@@ -81,10 +92,11 @@ tgasave :: proc() {
 		texture,
 		&zbuffer,
 		false,
-		&Vec3f{0, 0, 1},
+		light,
 		Vec3f{.5, .5, 1},
 		Vec3f{400, 400, 0},
 		&Color{200, 150, 250},
+		false,
 	)
 	renderModel(
 		model,
@@ -92,10 +104,11 @@ tgasave :: proc() {
 		nil,
 		&zbuffer,
 		true,
-		&Vec3f{0, 0, 1},
+		light,
 		Vec3f{.5, .5, 1},
 		Vec3f{0, 0, 0},
 		&Color{200, 150, 250},
+		false,
 	)
 	renderModel(
 		model,
@@ -103,10 +116,12 @@ tgasave :: proc() {
 		texture,
 		&zbuffer,
 		true,
-		&Vec3f{0, 0, 3},
-		Vec3f{.5, .5, 1},
-		Vec3f{400, 0, 0},
+		light,
+		Vec3f{1, 1, 1},
+		// Vec3f{.5, .5, 1},
+		Vec3f{200, -200, 1.5},
 		&Color{200, 150, 250},
+		true,
 	)
 
 	flip_image_vertical(&img)
