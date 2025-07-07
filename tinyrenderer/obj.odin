@@ -92,6 +92,16 @@ mul_mat4_vec4 :: proc(m: Mat4, v: Vec4f) -> Vec4f {
 	}
 }
 
+/*
+
+w/2    0     0    (x + (w/2))
+0     h/2    0    (y + (h/2))
+0      0    d/2    (d/2)
+0      0     0       1
+
+M * Vec{i,j,k,1}
+
+*/
 viewport :: proc(x, y, w, h, depth: f32) -> Mat4 {
 	m: Mat4
 	for i in 0 ..< 4 do for j in 0 ..< 4 do m[i][j] = 0
@@ -254,8 +264,8 @@ renderModel :: proc(
 		uvs := &[3]Vec2f{uv0, uv1, uv2}
 		if (filled) {
 			if (zbuffer != nil) {
-				drawTriangleFilled(zbuffer, img, texture, screen_coords, uvs, intensity, color)
-				// neotriangle(zbuffer, img, texture, screen_coords, uvs, intensity, c)
+				// drawTriangleFilled(zbuffer, img, texture, screen_coords, uvs, intensity, color)
+				neotriangle(zbuffer, img, texture, screen_coords, uvs, intensity, color)
 			} else {
 				drawTriangleFilled(nil, img, texture, screen_coords, uvs, intensity, color)
 			}

@@ -66,31 +66,6 @@ drawTriangleFilled :: proc(
 	}
 
 	P := Vec3f{}
-	// for x := bboxmin.x; x <= bboxmax.x; x += 1 {
-	// 	for y := bboxmin.y; y <= bboxmax.y; y += 1 {
-	// 		P.x = x
-	// 		P.y = y
-	// 		bc := barycentric(pts, P)
-	// 		if bc.x < 0.0 || bc.y < 0.0 || bc.z < 0.0 {
-	// 			continue
-	// 		}
-
-	// 		uv := uvs[0] * bc.x + uvs[1] * bc.y + uvs[2] * bc.z
-	// 		icolor := sample_texture(texture, uv, color, intensity)
-
-	// 		if (zbuffer == nil) {
-	// 			set_pixel(img, x, y, icolor)
-	// 		} else {
-	// 			z := pts[0].z * bc.x + pts[1].z * bc.y + pts[2].z * bc.z
-
-	// 			idx := int(x + y * width)
-	// 			if zbuffer[idx] < z {
-	// 				zbuffer[idx] = z
-	// 				set_pixel(img, x, y, icolor)
-	// 			}
-	// 		}
-	// 	}
-	// }
 
 	for x := int(bboxmin.x); x <= int(bboxmax.x); x += 1 {
 		for y := int(bboxmin.y); y <= int(bboxmax.y); y += 1 {

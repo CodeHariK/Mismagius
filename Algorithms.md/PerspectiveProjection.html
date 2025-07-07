@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perspective Projection</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+
+        .diagram-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        svg {
+            width: 100%;
+            height: auto;
+        }
+
+        .equation {
+            background: #2c3e50;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        .matrix {
+            display: inline-block;
+            vertical-align: middle;
+            margin: 0 10px;
+        }
+
+        .matrix-content {
+            border-left: 2px solid #fff;
+            border-right: 2px solid #fff;
+            padding: 10px 15px;
+            display: inline-block;
+        }
+
+        .step {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #3498db;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #ffc107;
+            margin: 10px 0;
+        }
+
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #34495e;
+            margin-top: 25px;
+        }
+
+        .interactive-controls {
+            background: #f1f3f4;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .slider-container {
+            margin: 10px 0;
+        }
+
+        .slider-container label {
+            display: inline-block;
+            width: 150px;
+            font-weight: bold;
+        }
+
+        .slider-container input[type="range"] {
+            width: 200px;
+            margin: 0 10px;
+        }
+
+        .slider-container span {
+            font-weight: bold;
+            color: #667eea;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Perspective Projection</h1>
+
+        <div class="section">
+            <h2>1. Conceptual Overview</h2>
+            <p>Perspective projection simulates how we see the 3D world on a 2D surface. Objects farther away appear
+                smaller, and parallel lines converge to vanishing points. This creates the illusion of depth and
+                distance.</p>
+
+            <div class="highlight">
+                <strong>Key Principle:</strong> The projection divides the x and y coordinates by the z coordinate
+                (depth) to create the foreshortening effect.
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>2. Interactive Perspective Projection Diagram</h2>
+
+            <div class="interactive-controls">
+                <div class="slider-container">
+                    <label>Focal Length (f):</label>
+                    <input type="range" id="focalLength" min="1" max="10" value="5" step="0.1">
+                    <span id="focalValue">5.0</span>
+                </div>
+                <div class="slider-container">
+                    <label>Object Z Position:</label>
+                    <input type="range" id="objectZ" min="2" max="20" value="10" step="0.5">
+                    <span id="zValue">10.0</span>
+                </div>
+                <div class="slider-container">
+                    <label>Object Height:</label>
+                    <input type="range" id="objectHeight" min="1" max="5" value="3" step="0.1">
+                    <span id="heightValue">3.0</span>
+                </div>
+            </div>
+
+            <div class="diagram-container">
+                <svg id="projectionDiagram" viewBox="0 0 800 500">
+                    <!-- Background -->
+                    <rect width="800" height="500" fill="#f8f9fa" />
+
+                    <!-- Grid -->
+                    <defs>
+                        <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e9ecef" stroke-width="1" />
+                        </pattern>
+                    </defs>
+                    <rect width="800" height="500" fill="url(#grid)" />
+
+                    <!-- Coordinate system -->
+                    <line x1="100" y1="250" x2="700" y2="250" stroke="#34495e" stroke-width="2"
+                        marker-end="url(#arrowhead)" />
+                    <line x1="100" y1="400" x2="100" y2="50" stroke="#34495e" stroke-width="2"
+                        marker-end="url(#arrowhead)" />
+
+                    <!-- Arrow markers -->
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#34495e" />
+                        </marker>
+                    </defs>
+
+                    <!-- Labels -->
+                    <text x="710" y="245" fill="#34495e" font-size="14" font-weight="bold">Z</text>
+                    <text x="85" y="45" fill="#34495e" font-size="14" font-weight="bold">Y</text>
+                    <text x="90" y="270" fill="#34495e" font-size="12">O (Eye)</text>
+
+                    <!-- Projection plane -->
+                    <line id="projectionPlane" x1="200" y1="100" x2="200" y2="400" stroke="#e74c3c" stroke-width="3" />
+                    <text x="205" y="95" fill="#e74c3c" font-size="12" font-weight="bold">Projection Plane (z=f)</text>
+
+                    <!-- 3D Object -->
+                    <g id="object3D">
+                        <!-- Object representation -->
+                        <rect id="objectRect" x="390" y="175" width="20" height="150" fill="#3498db" opacity="0.7" />
+                        <text id="objectLabel" x="420" y="260" fill="#2c3e50" font-size="12">3D Object</text>
+                    </g>
+
+                    <!-- Projected object -->
+                    <g id="projected2D">
+                        <rect id="projectedRect" x="195" y="200" width="10" height="100" fill="#27ae60" opacity="0.8" />
+                        <text x="210" y="245" fill="#27ae60" font-size="12">2D Projection</text>
+                    </g>
+
+                    <!-- Projection rays -->
+                    <line id="topRay" x1="100" y1="250" x2="410" y2="175" stroke="#8e44ad" stroke-width="2"
+                        stroke-dasharray="5,5" />
+                    <line id="bottomRay" x1="100" y1="250" x2="410" y2="325" stroke="#8e44ad" stroke-width="2"
+                        stroke-dasharray="5,5" />
+
+                    <!-- Measurements -->
+                    <text id="focalText" x="140" y="440" fill="#e74c3c" font-size="14" font-weight="bold">f = 5.0</text>
+                    <text id="zText" x="500" y="440" fill="#3498db" font-size="14" font-weight="bold">z = 10.0</text>
+                </svg>
+            </div>
+
+            <div class="highlight">
+                <strong>Interactive Elements:</strong> Adjust the sliders above to see how focal length, object
+                distance, and object size affect the projection.
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>3. Mathematical Derivation</h2>
+
+            <div class="step">
+                <h3>Step 1: Basic Perspective Projection</h3>
+                <p>Consider a point P(x, y, z) in 3D space. We want to project it onto a plane at distance f from the
+                    eye (origin).</p>
+
+                <p>Using similar triangles:</p>
+                <div class="equation">
+                    x' / f = x / z → x' = f · x / z<br>
+                    y' / f = y / z → y' = f · y / z
+                </div>
+
+                <p>Where (x', y') are the 2D projected coordinates.</p>
+            </div>
+
+            <div class="step">
+                <h3>Step 2: Homogeneous Coordinates</h3>
+                <p>To represent this as a matrix transformation, we use homogeneous coordinates:</p>
+
+                <div class="equation">
+                    3D point: (x, y, z, 1)<br>
+                    2D point: (x', y', 1)
+                </div>
+
+                <p>The projection in homogeneous coordinates becomes:</p>
+                <div class="equation">
+                    (x', y', w) = (f·x/z, f·y/z, 1) · z/z = (f·x, f·y, z)
+                </div>
+            </div>
+
+            <div class="step">
+                <h3>Step 3: Projection Matrix</h3>
+                <p>The perspective projection matrix is:</p>
+
+                <div class="equation">
+                    <div class="matrix">
+                        <div class="matrix-content">
+                            f 0 0 0<br>
+                            0 f 0 0<br>
+                            0 0 1 0<br>
+                            0 0 1 0
+                        </div>
+                    </div>
+                </div>
+
+                <p>Applying this matrix:</p>
+                <div class="equation">
+                    <div class="matrix">
+                        <div class="matrix-content">
+                            f 0 0 0<br>
+                            0 f 0 0<br>
+                            0 0 1 0<br>
+                            0 0 1 0
+                        </div>
+                    </div>
+                    ·
+                    <div class="matrix">
+                        <div class="matrix-content">
+                            x<br>
+                            y<br>
+                            z<br>
+                            1
+                        </div>
+                    </div>
+                    =
+                    <div class="matrix">
+                        <div class="matrix-content">
+                            f·x<br>
+                            f·y<br>
+                            z<br>
+                            z
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <h3>Step 4: Perspective Division</h3>
+                <p>After matrix multiplication, we perform perspective division by the w-component:</p>
+
+                <div class="equation">
+                    x' = (f·x) / z<br>
+                    y' = (f·y) / z<br>
+                    z' = z / z = 1
+                </div>
+
+                <p>This gives us the final 2D projected coordinates (x', y').</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>4. Complete Perspective Projection Matrix</h2>
+
+            <div class="step">
+                <h3>Standard Form with Field of View</h3>
+                <p>In practice, we often use field of view (FOV) and aspect ratio:</p>
+
+                <div class="equation">
+                    f = 1 / tan(FOV/2)<br>
+                    aspect = width / height
+                </div>
+
+                <p>The complete projection matrix becomes:</p>
+                <div class="equation">
+                    <div class="matrix">
+                        <div class="matrix-content">
+                            f/aspect 0 0 0<br>
+                            0 f 0 0<br>
+                            0 0 1 0<br>
+                            0 0 1 0
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <h3>With Z-Buffer (Depth)</h3>
+                <p>For 3D rendering with depth testing, we need to preserve z-information:</p>
+
+                <div class="equation">
+                    <div class="matrix">
+                        <div class="matrix-content">
+                            f/aspect 0 0 0<br>
+                            0 f 0 0<br>
+                            0 0 (f+n)/(f-n) -2fn/(f-n)<br>
+                            0 0 1 0
+                        </div>
+                    </div>
+                </div>
+
+                <p>Where n = near plane distance, f = far plane distance</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>5. Key Properties</h2>
+
+            <div class="highlight">
+                <strong>Foreshortening:</strong> Objects farther away (larger z) appear smaller due to division by z.
+            </div>
+
+            <div class="highlight">
+                <strong>Vanishing Points:</strong> Parallel lines in 3D converge to points in 2D projection.
+            </div>
+
+            <div class="highlight">
+                <strong>Non-linear Depth:</strong> Z-values are not linearly distributed in the projected space.
+            </div>
+
+            <div class="highlight">
+                <strong>Focal Length Effect:</strong> Larger f creates a "telephoto" effect (less perspective
+                distortion), smaller f creates a "wide-angle" effect (more distortion).
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Interactive diagram controls
+        const focalSlider = document.getElementById('focalLength');
+        const zSlider = document.getElementById('objectZ');
+        const heightSlider = document.getElementById('objectHeight');
+
+        const focalValue = document.getElementById('focalValue');
+        const zValue = document.getElementById('zValue');
+        const heightValue = document.getElementById('heightValue');
+
+        const focalText = document.getElementById('focalText');
+        const zText = document.getElementById('zText');
+
+        function updateDiagram() {
+            const f = parseFloat(focalSlider.value);
+            const z = parseFloat(zSlider.value);
+            const h = parseFloat(heightSlider.value);
+
+            // Update display values
+            focalValue.textContent = f.toFixed(1);
+            zValue.textContent = z.toFixed(1);
+            heightValue.textContent = h.toFixed(1);
+
+            focalText.textContent = `f = ${f.toFixed(1)}`;
+            zText.textContent = `z = ${z.toFixed(1)}`;
+
+            // Calculate positions
+            const eyeX = 100;
+            const eyeY = 250;
+            const projectionPlaneX = 100 + f * 20; // Scale for visualization
+            const objectX = 100 + z * 30; // Scale for visualization
+
+            // Update projection plane
+            const projectionPlane = document.getElementById('projectionPlane');
+            projectionPlane.setAttribute('x1', projectionPlaneX);
+            projectionPlane.setAttribute('x2', projectionPlaneX);
+
+            // Update 3D object
+            const objectRect = document.getElementById('objectRect');
+            const objectHeight = h * 50; // Scale for visualization
+            objectRect.setAttribute('x', objectX - 10);
+            objectRect.setAttribute('y', eyeY - objectHeight / 2);
+            objectRect.setAttribute('height', objectHeight);
+
+            const objectLabel = document.getElementById('objectLabel');
+            objectLabel.setAttribute('x', objectX + 20);
+            objectLabel.setAttribute('y', eyeY);
+
+            // Calculate projected size
+            const projectedHeight = (f * objectHeight) / (z * 6); // Adjusted scaling
+            const projectedRect = document.getElementById('projectedRect');
+            projectedRect.setAttribute('x', projectionPlaneX - 5);
+            projectedRect.setAttribute('y', eyeY - projectedHeight / 2);
+            projectedRect.setAttribute('height', projectedHeight);
+
+            // Update projection rays
+            const topRay = document.getElementById('topRay');
+            const bottomRay = document.getElementById('bottomRay');
+
+            topRay.setAttribute('x1', eyeX);
+            topRay.setAttribute('y1', eyeY);
+            topRay.setAttribute('x2', objectX);
+            topRay.setAttribute('y2', eyeY - objectHeight / 2);
+
+            bottomRay.setAttribute('x1', eyeX);
+            bottomRay.setAttribute('y1', eyeY);
+            bottomRay.setAttribute('x2', objectX);
+            bottomRay.setAttribute('y2', eyeY + objectHeight / 2);
+        }
+
+        // Event listeners
+        focalSlider.addEventListener('input', updateDiagram);
+        zSlider.addEventListener('input', updateDiagram);
+        heightSlider.addEventListener('input', updateDiagram);
+
+        // Initial update
+        updateDiagram();
+    </script>
+</body>
+
+</html>
