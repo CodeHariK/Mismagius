@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>gluLookAt Matrix Derivation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.8em;
+            background: linear-gradient(45deg, #3498db, #2c3e50);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .section {
+            margin: 30px 0;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            border-left: 6px solid #3498db;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .diagram-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            border: 2px solid #e9ecef;
+        }
+
+        svg {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .equation {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            margin: 20px 0;
+            overflow-x: auto;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            line-height: 1.6;
+        }
+
+        .matrix {
+            display: inline-block;
+            vertical-align: middle;
+            margin: 0 15px;
+        }
+
+        .matrix-content {
+            border-left: 3px solid #fff;
+            border-right: 3px solid #fff;
+            padding: 15px 20px;
+            display: inline-block;
+            font-size: 14px;
+        }
+
+        .step {
+            background: linear-gradient(135deg, #ebf8ff 0%, #dbeafe 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 15px 0;
+            border-left: 5px solid #3498db;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 5px solid #f39c12;
+            margin: 15px 0;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .warning {
+            background: linear-gradient(135deg, #fee 0%, #fdd 100%);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 5px solid #e74c3c;
+            margin: 15px 0;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+
+        h3 {
+            color: #34495e;
+            margin-top: 25px;
+            font-size: 1.3em;
+        }
+
+        .interactive-controls {
+            background: linear-gradient(135deg, #f1f3f4 0%, #e8eaed 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .control-group {
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .control-group label {
+            display: inline-block;
+            width: 120px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .control-group input[type="range"] {
+            flex: 1;
+            max-width: 200px;
+            height: 8px;
+            border-radius: 4px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .control-group input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .control-group span {
+            font-weight: bold;
+            color: #3498db;
+            min-width: 60px;
+        }
+
+        .vector-display {
+            background: #2c3e50;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 20px 0;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .comment {
+            color: #6a9955;
+        }
+
+        .keyword {
+            color: #569cd6;
+        }
+
+        .number {
+            color: #b5cea8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>gluLookAt Matrix Derivation</h1>
+
+        <div class="section">
+            <h2>1. Problem Definition</h2>
+            <p>The gluLookAt function creates a view transformation matrix that positions and orients a camera in 3D
+                space. It takes three key parameters:</p>
+
+            <div class="highlight">
+                <strong>Parameters:</strong><br>
+                • <strong>eye</strong>: Camera position (ex, ey, ez)<br>
+                • <strong>center</strong>: Target point to look at (cx, cy, cz)<br>
+                • <strong>up</strong>: Up vector defining camera orientation (ux, uy, uz)
+            </div>
+
+            <p>The goal is to create a matrix that transforms world coordinates to camera coordinates, where:</p>
+            <ul>
+                <li>Camera is at the origin looking down the negative Z-axis</li>
+                <li>Y-axis points up in camera space</li>
+                <li>X-axis points to the right</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>2. Interactive 3D Visualization</h2>
+
+            <div class="interactive-controls">
+                <div class="control-group">
+                    <label>Eye X:</label>
+                    <input type="range" id="eyeX" min="-10" max="10" value="5" step="0.5">
+                    <span id="eyeXValue">5.0</span>
+                </div>
+                <div class="control-group">
+                    <label>Eye Y:</label>
+                    <input type="range" id="eyeY" min="-10" max="10" value="3" step="0.5">
+                    <span id="eyeYValue">3.0</span>
+                </div>
+                <div class="control-group">
+                    <label>Eye Z:</label>
+                    <input type="range" id="eyeZ" min="-10" max="10" value="8" step="0.5">
+                    <span id="eyeZValue">8.0</span>
+                </div>
+                <div class="control-group">
+                    <label>Center X:</label>
+                    <input type="range" id="centerX" min="-10" max="10" value="0" step="0.5">
+                    <span id="centerXValue">0.0</span>
+                </div>
+                <div class="control-group">
+                    <label>Center Y:</label>
+                    <input type="range" id="centerY" min="-10" max="10" value="0" step="0.5">
+                    <span id="centerYValue">0.0</span>
+                </div>
+                <div class="control-group">
+                    <label>Center Z:</label>
+                    <input type="range" id="centerZ" min="-10" max="10" value="0" step="0.5">
+                    <span id="centerZValue">0.0</span>
+                </div>
+            </div>
+
+            <div class="diagram-container">
+                <svg id="lookAtDiagram" viewBox="0 0 800 600">
+                    <!-- Background -->
+                    <rect width="800" height="600" fill="#f8f9fa" />
+
+                    <!-- 3D Grid -->
+                    <defs>
+                        <pattern id="grid3d" width="30" height="30" patternUnits="userSpaceOnUse">
+                            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#e9ecef" stroke-width="1" />
+                        </pattern>
+                    </defs>
+                    <rect width="800" height="600" fill="url(#grid3d)" />
+
+                    <!-- World coordinate system -->
+                    <g id="worldCoords">
+                        <line x1="400" y1="300" x2="500" y2="300" stroke="#e74c3c" stroke-width="3"
+                            marker-end="url(#arrowX)" />
+                        <line x1="400" y1="300" x2="400" y2="200" stroke="#27ae60" stroke-width="3"
+                            marker-end="url(#arrowY)" />
+                        <line x1="400" y1="300" x2="350" y2="250" stroke="#3498db" stroke-width="3"
+                            marker-end="url(#arrowZ)" />
+                        <text x="505" y="305" fill="#e74c3c" font-size="14" font-weight="bold">X</text>
+                        <text x="405" y="195" fill="#27ae60" font-size="14" font-weight="bold">Y</text>
+                        <text x="335" y="245" fill="#3498db" font-size="14" font-weight="bold">Z</text>
+                    </g>
+
+                    <!-- Arrow markers -->
+                    <defs>
+                        <marker id="arrowX" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#e74c3c" />
+                        </marker>
+                        <marker id="arrowY" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#27ae60" />
+                        </marker>
+                        <marker id="arrowZ" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#3498db" />
+                        </marker>
+                        <marker id="arrowGeneric" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#8e44ad" />
+                        </marker>
+                    </defs>
+
+                    <!-- Eye position -->
+                    <circle id="eyePos" cx="500" cy="200" r="8" fill="#f39c12" />
+                    <text id="eyeLabel" x="510" y="195" fill="#f39c12" font-size="12" font-weight="bold">Eye</text>
+
+                    <!-- Center/Target position -->
+                    <circle id="centerPos" cx="400" cy="300" r="6" fill="#e74c3c" />
+                    <text id="centerLabel" x="410" y="295" fill="#e74c3c" font-size="12"
+                        font-weight="bold">Center</text>
+
+                    <!-- Look direction vector -->
+                    <line id="lookVector" x1="500" y1="200" x2="400" y2="300" stroke="#8e44ad" stroke-width="3"
+                        marker-end="url(#arrowGeneric)" />
+                    <text id="lookLabel" x="430" y="230" fill="#8e44ad" font-size="12" font-weight="bold">Look
+                        Direction</text>
+
+                    <!-- Up vector -->
+                    <line id="upVector" x1="500" y1="200" x2="500" y2="150" stroke="#16a085" stroke-width="3"
+                        marker-end="url(#arrowUp)" />
+                    <text id="upLabel" x="510" y="175" fill="#16a085" font-size="12" font-weight="bold">Up</text>
+
+                    <!-- Camera coordinate system -->
+                    <g id="cameraCoords">
+                        <line id="camX" x1="500" y1="200" x2="550" y2="200" stroke="#e67e22" stroke-width="2"
+                            marker-end="url(#arrowCamX)" />
+                        <line id="camY" x1="500" y1="200" x2="500" y2="160" stroke="#9b59b6" stroke-width="2"
+                            marker-end="url(#arrowCamY)" />
+                        <line id="camZ" x1="500" y1="200" x2="475" y2="225" stroke="#34495e" stroke-width="2"
+                            marker-end="url(#arrowCamZ)" />
+                        <text id="camXLabel" x="555" y="205" fill="#e67e22" font-size="12">Right</text>
+                        <text id="camYLabel" x="505" y="155" fill="#9b59b6" font-size="12">Up</text>
+                        <text id="camZLabel" x="460" y="240" fill="#34495e" font-size="12">Forward</text>
+                    </g>
+
+                    <!-- Additional arrow markers -->
+                    <defs>
+                        <marker id="arrowUp" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#16a085" />
+                        </marker>
+                        <marker id="arrowCamX" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#e67e22" />
+                        </marker>
+                        <marker id="arrowCamY" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#9b59b6" />
+                        </marker>
+                        <marker id="arrowCamZ" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#34495e" />
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+
+            <div class="vector-display">
+                <div><strong>Calculated Vectors:</strong></div>
+                <div id="vectorDisplay">
+                    Forward: (0.000, 0.000, 0.000)<br>
+                    Right: (0.000, 0.000, 0.000)<br>
+                    Up: (0.000, 0.000, 0.000)
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>3. Mathematical Derivation</h2>
+
+            <div class="step">
+                <h3>Step 1: Calculate Forward Vector</h3>
+                <p>The forward vector points from the eye to the center (target). In camera space, this becomes the
+                    negative Z-axis:</p>
+
+                <div class="equation">
+                    forward = normalize(center - eye)<br>
+                    forward = normalize((cx - ex, cy - ey, cz - ez))
+                </div>
+
+                <div class="warning">
+                    <strong>Important:</strong> Some implementations use (eye - center) to get the direction the camera
+                    is facing along positive Z. OpenGL uses negative Z for forward direction.
+                </div>
+            </div>
+
+            <div class="step">
+                <h3>Step 2: Calculate Right Vector</h3>
+                <p>The right vector is perpendicular to both the forward vector and the up vector. We use the cross
+                    product:</p>
+
+                <div class="equation">
+                    right = normalize(forward × up)<br>
+                    right = normalize(cross(forward, up))
+                </div>
+
+                <p>Cross product calculation:</p>
+                <div class="equation">
+                    right = (fy·uz - fz·uy, fz·ux - fx·uz, fx·uy - fy·ux)
+                </div>
+
+                <p>Where f = (fx, fy, fz) is the forward vector and u = (ux, uy, uz) is the input up vector.</p>
+            </div>
+
+            <div class="step">
+                <h3>Step 3: Calculate True Up Vector</h3>
+                <p>The input up vector might not be perpendicular to the forward vector. We calculate the true up
+                    vector:</p>
+
+                <div class="equation">
+                    up = normalize(right × forward)<br>
+                    up = normalize(cross(right, forward))
+                </div>
+
+                <p>This ensures we have an orthonormal basis for the camera coordinate system.</p>
+            </div>
+
+            <div class="step">
+                <h3>Step 4: Construct the Rotation Matrix</h3>
+                <p>The rotation matrix transforms from world coordinates to camera coordinates:</p>
+
+                <div class="equation">
+                    R = <div class="matrix">
+                        <div class="matrix-content">
+                            rx ry rz 0<br>
+                            ux uy uz 0<br>
+                            -fx -fy -fz 0<br>
+                            0 0 0 1
+                        </div>
+                    </div>
+                </div>
+
+                <p>Where (rx, ry, rz) is the right vector, (ux, uy, uz) is the up vector, and (-fx, -fy, -fz) is the
+                    negative forward vector.</p>
+            </div>
+
+            <div class="step">
+                <h3>Step 5: Apply Translation</h3>
+                <p>We need to translate the world so that the eye position becomes the origin:</p>
+
+                <div class="equation">
+                    T = <div class="matrix">
+                        <div class="matrix-content">
+                            1 0 0 -ex<br>
+                            0 1 0 -ey<br>
+                            0 0 1 -ez<br>
+                            0 0 0 1
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <h3>Step 6: Combine Rotation and Translation</h3>
+                <p>The complete view matrix is: M = R × T</p>
+
+                <div class="equation">
+                    M = <div class="matrix">
+                        <div class="matrix-content">
+                            rx ry rz -(r·e)<br>
+                            ux uy uz -(u·e)<br>
+                            -fx -fy -fz (f·e)<br>
+                            0 0 0 1
+                        </div>
+                    </div>
+                </div>
+
+                <p>Where:</p>
+                <ul>
+                    <li>r·e = rx·ex + ry·ey + rz·ez (dot product of right and eye vectors)</li>
+                    <li>u·e = ux·ex + uy·ey + uz·ez (dot product of up and eye vectors)</li>
+                    <li>f·e = fx·ex + fy·ey + fz·ez (dot product of forward and eye vectors)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>4. Complete Implementation</h2>
+
+            <div class="code-block">
+                <span class="comment">// gluLookAt implementation</span>
+                <span class="keyword">void</span> gluLookAt(<span class="keyword">float</span> eyeX, <span
+                    class="keyword">float</span> eyeY, <span class="keyword">float</span> eyeZ,
+                <span class="keyword">float</span> centerX, <span class="keyword">float</span> centerY, <span
+                    class="keyword">float</span> centerZ,
+                <span class="keyword">float</span> upX, <span class="keyword">float</span> upY, <span
+                    class="keyword">float</span> upZ) {
+
+                <span class="comment">// Step 1: Calculate forward vector</span>
+                <span class="keyword">float</span> fx = centerX - eyeX;
+                <span class="keyword">float</span> fy = centerY - eyeY;
+                <span class="keyword">float</span> fz = centerZ - eyeZ;
+
+                <span class="comment">// Normalize forward vector</span>
+                <span class="keyword">float</span> fLen = sqrt(fx*fx + fy*fy + fz*fz);
+                fx /= fLen; fy /= fLen; fz /= fLen;
+
+                <span class="comment">// Step 2: Calculate right vector (forward × up)</span>
+                <span class="keyword">float</span> rx = fy*upZ - fz*upY;
+                <span class="keyword">float</span> ry = fz*upX - fx*upZ;
+                <span class="keyword">float</span> rz = fx*upY - fy*upX;
+
+                <span class="comment">// Normalize right vector</span>
+                <span class="keyword">float</span> rLen = sqrt(rx*rx + ry*ry + rz*rz);
+                rx /= rLen; ry /= rLen; rz /= rLen;
+
+                <span class="comment">// Step 3: Calculate true up vector (right × forward)</span>
+                <span class="keyword">float</span> ux = ry*(-fz) - rz*(-fy);
+                <span class="keyword">float</span> uy = rz*(-fx) - rx*(-fz);
+                <span class="keyword">float</span> uz = rx*(-fy) - ry*(-fx);
+
+                <span class="comment">// Step 4: Create the view matrix</span>
+                <span class="keyword">float</span> matrix[<span class="number">16</span>] = {
+                rx, ry, rz, -(rx*eyeX + ry*eyeY + rz*eyeZ),
+                ux, uy, uz, -(ux*eyeX + uy*eyeY + uz*eyeZ),
+                -fx, -fy, -fz, (fx*eyeX + fy*eyeY + fz*eyeZ),
+                <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span
+                    class="number">1</span>
+                };
+
+                <span class="comment">// Apply the matrix (multiply with current matrix)</span>
+                glMultMatrixf(matrix);
+                }
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>5. Key Properties and Applications</h2>
+
+            <div class="highlight">
+                <strong>Orthonormal Basis:</strong> The right, up, and forward vectors form an orthonormal basis,
+                meaning they are mutually perpendicular and have unit length.
+            </div>
+
+            <div class="highlight">
+                <strong>Right-Handed System:</strong> The camera coordinate system is right-handed, following the
+                convention: right × up = forward.
+            </div>
+
+            <div class="highlight">
+                <strong>View Transformation:</strong> The matrix transforms world coordinates to camera coordinates,
+                where the camera is at the origin looking down the negative Z-axis.
+            </div>
+
+            <div class="warning">
+                <strong>Gimbal Lock:</strong> Be careful when the up vector is parallel to the forward vector, as this
+                can cause mathematical instability.
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>6. Alternative Forms</h2>
+
+            <div class="step">
+                <h3>Column-Major Matrix (OpenGL Style)</h3>
+                <div class="equation">
+                    M = <div class="matrix">
+                        <div class="matrix-content">
+                            rx ux -fx 0<br>
+                            ry uy -fy 0<br>
+                            rz uz -fz 0<br>
+                            -(r·e) -(u·e) (f·e) 1
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <h3>Separated Translation and Rotation</h3>
+                <p>Some implementations separate the operations:</p>
+                <div class="equation">
+                    M = R × T<br>
+                    <br>
+                    Where R rotates to camera orientation<br>
+                    And T translates to camera position
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Interactive controls
+        const controls = ['eyeX', 'eyeY', 'eyeZ', 'centerX', 'centerY', 'centerZ'];
+        const sliders = {};
+        const valueDisplays = {};
+
+        controls.forEach(control => {
+            sliders[control] = document.getElementById(control);
+            valueDisplays[control] = document.getElementById(control + 'Value');
+            sliders[control].addEventListener('input', updateVisualization);
+        });
+
+        function normalize(v) {
+            const len = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+            return len > 0 ? { x: v.x / len, y: v.y / len, z: v.z / len } : { x: 0, y: 0, z: 0 };
+        }
+
+        function cross(a, b) {
+            return {
+                x: a.y * b.z - a.z * b.y,
+                y: a.z * b.x - a.x * b.z,
+                z: a.x * b.y - a.y * b.x
+            };
+        }
+
+        function dot(a, b) {
+            return a.x * b.x + a.y * b.y + a.z * b.z;
+        }
+
+        function updateVisualization() {
+            // Update value displays
+            controls.forEach(control => {
+                valueDisplays[control].textContent = parseFloat(sliders[control].value).toFixed(1);
+            });
+
+            // Get current values
+            const eye = {
+                x: parseFloat(sliders.eyeX.value),
+                y: parseFloat(sliders.eyeY.value),
+                z: parseFloat(sliders.eyeZ.value)
+            };
+
+            const center = {
+                x: parseFloat(sliders.centerX.value),
+                y: parseFloat(sliders.centerY.value),
+                z: parseFloat(sliders.centerZ.value)
+            };
+
+            const up = { x: 0, y: 1, z: 0 }; // Fixed up vector for simplicity
+
+            // Calculate vectors
+            const forward = normalize({
+                x: center.x - eye.x,
+                y: center.y - eye.y,
+                z: center.z - eye.z
+            });
+
+            const right = normalize(cross(forward, up));
+            const trueUp = normalize(cross(right, forward));
+
+            // Update vector display
+            const vectorDisplay = document.getElementById('vectorDisplay');
+            vectorDisplay.innerHTML = `
+                Forward: (${forward.x.toFixed(3)}, ${forward.y.toFixed(3)}, ${forward.z.toFixed(3)})<br>
+                Right: (${right.x.toFixed(3)}, ${right.y.toFixed(3)}, ${right.z.toFixed(3)})<br>
+                Up: (${trueUp.x.toFixed(3)}, ${trueUp.y.toFixed(3)}, ${trueUp.z.toFixed(3)})<br><br>
+                <strong>View Matrix:</strong><br>
+                [${right.x.toFixed(3)}  ${right.y.toFixed(3)}  ${right.z.toFixed(3)}  ${(-dot(right, eye)).toFixed(3)}]<br>
+                [${trueUp.x.toFixed(3)}  ${trueUp.y.toFixed(3)}  ${trueUp.z.toFixed(3)}  ${(-dot(trueUp, eye)).toFixed(3)}]<br>
+                [${(-forward.x).toFixed(3)}  ${(-forward.y).toFixed(3)}  ${(-forward.z).toFixed(3)}  ${dot(forward, eye).toFixed(3)}]<br>
+                [0.000  0.000  0.000  1.000]
+            `;
+
+            // Update SVG positions (simplified 2D projection)
+            const scale = 30;
+            const offsetX = 400;
+            const offsetY = 300;
+
+            // Project 3D to 2D for visualization
+            const eyeX2D = offsetX + eye.x * scale - eye.z * scale * 0.5;
+            const eyeY2D = offsetY - eye.y * scale + eye.z * scale * 0.3;
+
+            const centerX2D = offsetX + center.x * scale - center.z * scale * 0.5;
+            const centerY2D = offsetY - center.y * scale + center.z * scale * 0.3;
+
+            // Update eye position
+            document.getElementById('eyePos').setAttribute('cx', eyeX2D);
+            document.getElementById('eyePos').setAttribute('cy', eyeY2D);
+            document.getElementById('eyeLabel').setAttribute('x', eyeX2D + 10);
+            document.getElementById('eyeLabel').setAttribute('y', eyeY2D - 5);
+
+            // Update center position
+            document.getElementById('centerPos').setAttribute('cx', centerX2D);
+            document.getElementById('centerPos').setAttribute('cy', centerY2D);
+            document.getElementById('centerLabel').setAttribute('x', centerX2D + 10);
+            document.getElementById('centerLabel').setAttribute('y', centerY2D - 5);
+
+            // Update look vector
+            document.getElementById('lookVector').setAttribute('x1', eyeX2D);
+            document.getElementById('lookVector').setAttribute('y1', eyeY2D);
+            document.getElementById('lookVector').setAttribute('x2', centerX2D);
+            document.getElementById('lookVector').setAttribute('y2', centerY2D);
+
+            // Update camera coordinate system
+            const rightEnd = {
+                x: eyeX2D + right.x * 50,
+                y: eyeY2D - right.y * 50
+            };
+            const upEnd = {
+                x: eyeX2D + trueUp.x * 50,
+                y: eyeY2D - trueUp.y * 50
+            };
+            const forwardEnd = {
+                x: eyeX2D + forward.x * 50,
+                y: eyeY2D - forward.y * 50
+            };
+
+            document.getElementById('camX').setAttribute('x1', eyeX2D);
+            document.getElementById('camX').setAttribute('y1', eyeY2D);
+            document.getElementById('camX').setAttribute('x2', rightEnd.x);
+            document.getElementById('camX').setAttribute('y2', rightEnd.y);
+
+            document.getElementById('camY').setAttribute('x1', eyeX2D);
+            document.getElementById('camY').setAttribute('y1', eyeY2D);
+            document.getElementById('camY').setAttribute('x2', upEnd.x);
+            document.getElementById('camY').setAttribute('y2', upEnd.y);
+
+            document.getElementById('camZ').setAttribute('x1', eyeX2D);
+            document.getElementById('camZ').setAttribute('y1', eyeY2D);
+            document.getElementById('camZ').setAttribute('x2', forwardEnd.x);
+            document.getElementById('camZ').setAttribute('y2', forwardEnd.y);
+
+            // Update labels
+            document.getElementById('camXLabel').setAttribute('x', rightEnd.x + 5);
+            document.getElementById('camXLabel').setAttribute('y', rightEnd.y + 5);
+            document.getElementById('camYLabel').setAttribute('x', upEnd.x + 5);
+            document.getElementById('camYLabel').setAttribute('y', upEnd.y + 5);
+            document.getElementById('camZLabel').setAttribute('x', forwardEnd.x + 5);
+            document.getElementById('camZLabel').setAttribute('y', forwardEnd.y + 5);
+
+            // Update up vector
+            document.getElementById('upVector').setAttribute('x1', eyeX2D);
+            document.getElementById('upVector').setAttribute('y1', eyeY2D);
+            document.getElementById('upVector').setAttribute('x2', eyeX2D);
+            document.getElementById('upVector').setAttribute('y2', eyeY2D - 50);
+
+            document.getElementById('upLabel').setAttribute('x', eyeX2D + 10);
+            document.getElementById('upLabel').setAttribute('y', eyeY2D - 25);
+        }
+
+        // Initial update
+        updateVisualization();
+    </script>
+</body>
+
+</html>

@@ -2,6 +2,11 @@
 
 * [Computer Graphics, Fall 2009](https://www.youtube.com/playlist?list=PL_w_qWAQZtAZhtzPI5pkAtcUVgmzdAP8g)
 
+## Linear Algebra
+
+* [Essence of linear algebra](https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab)
+* [Linear Algebra makes sense](https://www.youtube.com/playlist?list=PLg-OiIIbfPj3Wldtb0QfV0Yse8tL2nLGm)
+
 ## Projective Geometry
 
 * [An Intuitive Introduction to Projective Geometry Using Linear Algebra](https://www.youtube.com/watch?v=dPWTZSC7PYI)

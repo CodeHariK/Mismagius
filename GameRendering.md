@@ -32,27 +32,29 @@
 
 * [Interactive Computer Graphics](https://www.youtube.com/playlist?list=PLplnkTzzqsZS3R5DjmCQsqupu43oS9CFN)
 
-* [Physics and Math of Shading | SIGGRAPH Courses](https://www.youtube.com/watch?v=j-A0mwsJRmk)
-
-* [Frostbite pbr](https://blog.selfshadow.com/publications/s2014-shading-course/frostbite/s2014_pbs_frostbite_slides.pdf)
-
 * [The Secret Behind Photorealistic And Stylized Graphics](https://www.youtube.com/watch?v=KkOkx0FiHDA)
 
 * [3D Toon Rendering in 'Hi-Fi RUSH'](https://www.youtube.com/watch?v=gdBACyIOCtc&ab_channel=GDC2025)
-
-
-* [Real Shading in Unreal Engine 4](https://cdn2.unrealengine.com/Resources/files/2013SiggraphPresentationsNotes-26915738.pdf)
-
 
 * [Niagara renderer](https://www.youtube.com/playlist?list=PL0JVLUVCkk-l7CWCn3-cdftR0oajugYvd)
 
 
 * [Intermediate OpenGL](https://www.youtube.com/playlist?list=PLA0dXqQjCx0TKQiXRyQU62KQgcTE6E92f)
 
+## Physically based rendering
+
+* [Frostbite pbr](https://blog.selfshadow.com/publications/s2014-shading-course/frostbite/s2014_pbs_frostbite_slides.pdf)
+* [Physically Based Rendering](https://reference.wolfram.com/language/tutorial/PhysicallyBasedRendering.html)
+* [Physics and Math of Shading | SIGGRAPH Courses](https://www.youtube.com/watch?v=j-A0mwsJRmk)
+* [Physics and Math of Shading](https://blog.selfshadow.com/publications/s2014-shading-course/hoffman/s2014_pbs_physics_math_slides.pdf)
+* [Real Shading in Unreal Engine 4](https://cdn2.unrealengine.com/Resources/files/2013SiggraphPresentationsNotes-26915738.pdf)
 
 ## Raytracing
 
+* [Ray tracing essentials](https://www.youtube.com/playlist?list=PLs59hM6wCkPnukQ6neBnbipvHOxOjOPoT)
+* [How does Ray Tracing Work in Video Games and Movies?](https://www.youtube.com/watch?v=iOlehM5kNSk&ab_channel=BranchEducation)
 * [How Ray Tracing (Modern CGI) Works And How To Do It 600x Faster](https://www.youtube.com/watch?v=gsZiJeaMO48&ab_channel=Josh%27sChannel)
+* [Disney's Practical Guide to Path Tracing](https://www.youtube.com/watch?v=frLwRLS_ZR0&ab_channel=WaltDisneyAnimationStudios)
 
 ## SebastianLague
 
