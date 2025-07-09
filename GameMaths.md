@@ -9,11 +9,11 @@
 
 ## Projective Geometry
 
+* [The Math behind (most) 3D games - Perspective Projection](https://www.youtube.com/watch?v=U0_ONQQ5ZNM&ab_channel=BrendanGalea)
 * [An Intuitive Introduction to Projective Geometry Using Linear Algebra](https://www.youtube.com/watch?v=dPWTZSC7PYI)
 * [Putting Algebraic Curves in Perspective](https://www.youtube.com/watch?v=XXzhqStLG-4)
 
 * [How Do Computers Display 3D on a 2D Screen? (Perspective Projection)](https://www.youtube.com/watch?v=eoXn6nwV694)
-* [The Math behind (most) 3D games - Perspective Projection](https://www.youtube.com/watch?v=U0_ONQQ5ZNM&ab_channel=BrendanGalea)
 * [Computer Vision: The Camera Matrix](https://www.youtube.com/watch?v=Hz8kz5aeQ44&ab_channel=mpr)
 * [Quick Understanding of Homogeneous Coordinates for Computer Graphics](https://www.youtube.com/watch?v=o-xwmTODTUI&ab_channel=Miolith)
 * [We had to pause your ad blocker. Toggle on to enable experimental ad blocking. Block Ads 4D Thinking for 3D Graphics](https://www.youtube.com/watch?v=naatDSe6v1c)
