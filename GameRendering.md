@@ -6,11 +6,6 @@
 * https://github.com/google/filament
 * [Filament playlist](https://www.youtube.com/playlist?list=PLsYRP8pwiVX80EAOwcYcEvNexwaildjsF)
 
-* https://ssloy.github.io/tinyrenderer
-* https://github.com/ssloy/tinyrenderer/wiki/Lesson-0:-getting-started
-* https://github.com/Angelo1211/SoftwareRenderer
-* https://github.com/zauonlok/renderer
-
 * [Playlist Physically Based Rendering](https://www.youtube.com/playlist?list=PLsYRP8pwiVX8UVh-Ey-kfBaCU-NVYBaAT)
 
 * [Computer Graphics (CMU 15-462/662)](https://www.youtube.com/playlist?list=PL9_jI1bdZmz2emSh0UQ5iOdT2xRHFHL7E)
@@ -58,6 +53,9 @@
 
 ## SDF
 
+* [Painting a Character with Maths](https://www.youtube.com/watch?v=8--5LwHRhjk&ab_channel=InigoQuilez)
+* [Painting a Landscape with Mathematics](https://www.youtube.com/watch?v=BFld4EBO2RE&ab_channel=InigoQuilez)
+* [Signed Distance Functions (SDF)](https://www.youtube.com/playlist?list=PL0EpikNmjs2AUFqRi3vmpkrO3j-zWuoyq)
 * [Signed Distance Functions & Ray-Marching](https://www.youtube.com/watch?v=hX3mazz8txo&ab_channel=SumandProduct)
 
 ## SebastianLague
@@ -71,5 +69,10 @@
 * https://mamoniem.com/behind-the-pretty-frames-god-of-war/
 
 ## Projects
+
+* [Implementing a tiny CPU rasterizer](https://lisyarus.github.io/blog/posts/implementing-a-tiny-cpu-rasterizer-part-1.html)
+* https://github.com/ssloy/tinyrenderer/wiki/Lesson-0:-getting-started
+* https://github.com/Angelo1211/SoftwareRenderer
+* https://github.com/zauonlok/renderer
 
 * [Craft: Minecraft clone written in C]https://github.com/fogleman/Craft)

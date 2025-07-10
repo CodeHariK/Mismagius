@@ -46,6 +46,7 @@
 * [Physics of JellyCar: Soft Body Physics Explained](https://www.youtube.com/watch?v=3OmkehAJoyo&ab_channel=WalaberEntertainment)
 * [Soft Body Physics Explained](https://www.youtube.com/watch?v=kyQP4t_wOGI&ab_channel=Gonkee)
 * [I made Soft Body Physics from Scratch](https://www.youtube.com/watch?v=SIyKD0Qx2Ak&ab_channel=TheSandwichCoder)
+* [Making a 2D soft-body physics engine](https://lisyarus.github.io/blog/posts/soft-body-physics.html)
 
 * [Soft-body Simulation : Introduction to Physics Programming: Part 1 of 3](https://www.youtube.com/watch?v=erLT9HsllJU)
 

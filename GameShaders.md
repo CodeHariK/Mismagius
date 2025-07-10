@@ -1,3 +1,7 @@
+## Light
+
+* [A better point light attenuation function](https://lisyarus.github.io/blog/posts/point-light-attenuation.html)
+
 ## GDC
 
 * [The Illusion of Motion: Making Magic with Textures in the Vertex Shader](https://www.youtube.com/watch?v=EUTE1SoOGrk)
@@ -29,7 +33,6 @@
 ## Daniel Ilet
 
 * [🎨 Shader Graph Basics Course](https://www.youtube.com/playlist?list=PLsaDw3p1XpJiGHPnA8gZH6gO2gQYz3JH1)
-
 
 ## 
 

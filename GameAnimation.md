@@ -1,3 +1,7 @@
+## 
+
+[Skeletal animation in glTF](https://lisyarus.github.io/blog/posts/gltf-animation.html)
+
 # GDC
 
 * [SkullGirls : The GDC 2015 Live 2D Animation Demo](https://www.youtube.com/watch?v=z-5djm1pRpU&ab_channel=GDC2025)

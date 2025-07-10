@@ -37,8 +37,6 @@
 
 ## Git
 
-* <https://github.com/ssloy/tinyrenderer>
-
 * <https://github.com/fogleman/pt>
 
 * Vulkan Samples
