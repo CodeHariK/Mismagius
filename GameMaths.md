@@ -1,7 +1,3 @@
-## Computer Graphics
-
-* [Computer Graphics, Fall 2009](https://www.youtube.com/playlist?list=PL_w_qWAQZtAZhtzPI5pkAtcUVgmzdAP8g)
-
 ## Linear Algebra
 
 * [Essence of linear algebra](https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab)

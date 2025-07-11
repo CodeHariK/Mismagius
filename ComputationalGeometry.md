@@ -1,5 +1,7 @@
 ## Geometry
 
+* [Discrete Differential Geometry at Carnegie Mellon University (15-458)](https://www.youtube.com/playlist?list=PL9_jI1bdZmz0hIrNCMQW1YmZysAiIYSSS)
+
 * https://www.gorillasun.de/tag/tutorial/
 
 * https://github.com/Habrador/Computational-geometry
