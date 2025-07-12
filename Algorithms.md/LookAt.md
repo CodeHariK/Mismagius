@@ -39,20 +39,18 @@ We’ll define:
 
 Step-by-step
 	1.	Compute the forward vector (from eye to center):
-f = \text{normalize}(center - eye)
+f = normalize(center - eye)
 	2.	Compute the right vector:
-s = \text{normalize}(f \times up)
+s = normalize(f x up)
 	3.	Compute the true up vector:
-u = s \times f
+u = s x f
 	4.	Build the rotation + translation matrix:
 
-\text{View matrix} =
-\begin{bmatrix}
-s_x & u_x & -f_x & 0 \\
-s_y & u_y & -f_y & 0 \\
-s_z & u_z & -f_z & 0 \\
-	•	s \cdot eye & -u \cdot eye & f \cdot eye & 1
-\end{bmatrix}
+View matrix =
+sx 	 	  ux 	  -fx 	  0 
+sy 	 	  uy 	  -fy 	  0 
+sz 	 	  uz 	  -fz 	  0 
+s.eye 	-u.eye   f.eye 	  1
 
 This matrix transforms world-space coordinates into camera-space.
 

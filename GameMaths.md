@@ -29,3 +29,7 @@
 ## Spline
 
 * [The Continuity of Splines](https://www.youtube.com/watch?v=jvPPXbo87ds)
+
+## Misc
+
+* [Logarithms : The Invention That Saved Science](https://www.youtube.com/watch?v=lhdmMqSmg5g)
