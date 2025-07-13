@@ -70,46 +70,46 @@ tgasave :: proc() {
 		fmt.panicf("%v", err)
 	}
 
-	light := &Vec3f{0, 0, 1}
+	light := &Vec3f{0, 0, 2}
 
 	model := load_model(assetpath)
 
-	renderModel(
-		model,
-		&img,
-		texture,
-		&zbuffer,
-		true,
-		light,
-		Vec3f{.5, .5, 1},
-		Vec3f{0, 400, 0},
-		&Color{200, 150, 250},
-		false,
-	)
-	renderModel(
-		model,
-		&img,
-		texture,
-		&zbuffer,
-		false,
-		light,
-		Vec3f{.5, .5, 1},
-		Vec3f{400, 400, 0},
-		&Color{200, 150, 250},
-		false,
-	)
-	renderModel(
-		model,
-		&img,
-		nil,
-		&zbuffer,
-		true,
-		light,
-		Vec3f{.5, .5, 1},
-		Vec3f{0, 0, 0},
-		&Color{200, 150, 250},
-		false,
-	)
+	// renderModel(
+	// 	model,
+	// 	&img,
+	// 	texture,
+	// 	&zbuffer,
+	// 	true,
+	// 	light,
+	// 	Vec3f{.5, .5, 1},
+	// 	Vec3f{0, 400, 0},
+	// 	&Color{200, 150, 250},
+	// 	false,
+	// )
+	// renderModel(
+	// 	model,
+	// 	&img,
+	// 	texture,
+	// 	&zbuffer,
+	// 	false,
+	// 	light,
+	// 	Vec3f{.5, .5, 1},
+	// 	Vec3f{400, 400, 0},
+	// 	&Color{200, 150, 250},
+	// 	false,
+	// )
+	// renderModel(
+	// 	model,
+	// 	&img,
+	// 	nil,
+	// 	&zbuffer,
+	// 	true,
+	// 	light,
+	// 	Vec3f{.5, .5, 1},
+	// 	Vec3f{0, 0, 0},
+	// 	&Color{200, 150, 250},
+	// 	false,
+	// )
 	renderModel(
 		model,
 		&img,

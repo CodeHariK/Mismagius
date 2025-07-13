@@ -92,6 +92,22 @@ mul_mat4_vec4 :: proc(m: Mat4, v: Vec4f) -> Vec4f {
 	}
 }
 
+mul_mat4_mat4 :: proc(a, b: Mat4) -> Mat4 {
+	result: Mat4
+
+	for i := 0; i <= 3; i += 1 {
+		for j := 0; j <= 3; j += 1 {
+			sum: f32 = 0.0
+			for k := 0; k <= 3; k += 1 {
+				sum += a[i][k] * b[k][j]
+			}
+			result[i][j] = sum
+		}
+	}
+
+	return result
+}
+
 /*
 
 w/2    0     0    (x + (w/2))
@@ -113,6 +129,23 @@ viewport :: proc(x, y, w, h, depth: f32) -> Mat4 {
 	m[1][3] = y + h / 2.0
 	m[2][3] = depth / 2.0
 	return m
+}
+
+lookat :: proc(eye, center, up: Vec3f) -> Mat4 {
+	z := glsl.normalize_vec3(eye - center)
+	x := glsl.normalize_vec3(glsl.cross_vec3(up, z))
+	y := glsl.normalize_vec3(glsl.cross_vec3(z, x))
+
+	res := glsl.identity(Mat4)
+
+	for i := 0; i < 3; i += 1 {
+		res[0][i] = x[i]
+		res[1][i] = y[i]
+		res[2][i] = z[i]
+		res[i][3] = -center[i]
+	}
+
+	return res
 }
 
 projection :: proc(coeff: f32) -> Mat4 {
@@ -155,22 +188,10 @@ world2screen :: proc(
 	}
 }
 
-world2screen2 :: proc(v: Vec3f, ViewPort: Mat4, Projection: Mat4) -> Vec3f {
+world2screen2 :: proc(v: Vec3f, MVP: Mat4) -> Vec3f {
 	mv := v2m(v)
-	pv := mul_mat4_vec4(Projection, mv)
-	sv := mul_mat4_vec4(ViewPort, pv)
+	sv := mul_mat4_vec4(MVP, mv)
 	sc := m2v(sv)
-
-	// fmt.printf("v: %v\n", v)
-	// fmt.printf("mv: %v\n", mv)
-	// fmt.printf("pv: %v\n", pv)
-	// fmt.printf("sv: %v\n", sv)
-	// fmt.printf(
-	// 	"screen_coords: %d, %d, %d\n",
-	// 	int(sc.x / 10) * 10,
-	// 	int(sc.y / 10) * 10,
-	// 	int(sc.z / 10) * 10,
-	// )
 
 	return sc
 }
@@ -200,19 +221,25 @@ renderModel :: proc(
 	glslProjection := glsl.mat4Perspective(fovy, aspect, znear, zfar)
 
 	depth := f32(255.0)
-	camera_z := f32(3)
+
+	eye := Vec3f{1, 1, 3}
+	center := Vec3f{0, 0, 0}
+	camera_z := glsl.length_vec3(eye - center)
+
+	ModelView := lookat(eye, center, Vec3f{0, 1, 0})
 	ViewPort := viewport(width / 8, height / 8, width * 3 / 4, height * 3 / 4, depth)
 	Projection := projection(-1.0 / camera_z) // camera_z > 0
 
+	MVP := mul_mat4_mat4(ViewPort, mul_mat4_mat4(Projection, ModelView))
+	// MVP := ViewPort 
+	// MVP := mul_mat4_mat4(ViewPort, Projection)
+
 	fmt.printf("%v %v\n", width, height)
-	fmt.printf(
-		"Projection : \n%v\n%v\n%v\n%v\n",
-		Projection[0],
-		Projection[1],
-		Projection[2],
-		Projection[3],
-	)
-	fmt.printf("ViewPort : \n%v\n%v\n%v\n%v\n", ViewPort[0], ViewPort[1], ViewPort[2], ViewPort[3])
+	printMatrix("ModelView", ModelView)
+	printMatrix("Projection", Projection)
+	printMatrix("ViewPort", ViewPort)
+	printMatrix("PMV", mul_mat4_mat4(Projection, ModelView))
+	printMatrix("MVP", MVP)
 
 	for i in 0 ..< len(model.faces) {
 		face := model.faces[i]
@@ -223,7 +250,7 @@ renderModel :: proc(
 
 			if perspective {
 				// screen_coords[j] = world2screen2(v, ViewPort, glslProjection)
-				screen_coords[j] = world2screen2(v, ViewPort, Projection)
+				screen_coords[j] = world2screen2(v, MVP)
 			} else {
 				screen_coords[j] = world2screen(
 					v,
@@ -264,8 +291,8 @@ renderModel :: proc(
 		uvs := &[3]Vec2f{uv0, uv1, uv2}
 		if (filled) {
 			if (zbuffer != nil) {
-				// drawTriangleFilled(zbuffer, img, texture, screen_coords, uvs, intensity, color)
-				neotriangle(zbuffer, img, texture, screen_coords, uvs, intensity, color)
+				drawTriangleFilled(zbuffer, img, texture, screen_coords, uvs, intensity, color)
+				// neotriangle(zbuffer, img, texture, screen_coords, uvs, intensity, color)
 			} else {
 				drawTriangleFilled(nil, img, texture, screen_coords, uvs, intensity, color)
 			}
@@ -273,4 +300,9 @@ renderModel :: proc(
 			drawTriangle(img, zbuffer, screen_coords, color^)
 		}
 	}
+}
+
+printMatrix :: proc(name: string, m: Mat4) {
+	fmt.printf("%s : \n%v\n%v\n%v\n%v\n", name, m[0], m[1], m[2], m[3])
+	// fmt.printf("%s : \n%v\n%v\n%v\n%v\n%v\n", name, m, m[0], m[1], m[2], m[3])
 }
