@@ -3,8 +3,11 @@
 * [Computer Graphics (CMU 15-462/662)](https://www.youtube.com/playlist?list=PL9_jI1bdZmz2emSh0UQ5iOdT2xRHFHL7E)
 * [Computer Graphics, Fall 2009](https://www.youtube.com/playlist?list=PL_w_qWAQZtAZhtzPI5pkAtcUVgmzdAP8g)
 * [Introduction to Computer Graphics](https://www.youtube.com/playlist?list=PLplnkTzzqsZTfYh4UbhLGpI5kGd5oW_Hh)
-* [Interactive Computer Graphics](https://www.youtube.com/playlist?list=PLplnkTzzqsZS3R5DjmCQsqupu43oS9CFN)
 * [6.837: Introduction to Computer Graphics](https://www.youtube.com/playlist?list=PLQ3UicqQtfNuBjzJ-KEWmG1yjiRMXYKhh)
+* [Vulkan (c++) Game Engine Tutorials](https://www.youtube.com/playlist?list=PL8327DO66nu9qYVKLDmdLW_84-yE4auCR)
+* [Interactive Computer Graphics](https://www.youtube.com/playlist?list=PLplnkTzzqsZS3R5DjmCQsqupu43oS9CFN)
+
+* https://learnopengl.com/
 
 * https://google.github.io/filament/Filament.md.html
 * https://github.com/google/filament
@@ -76,7 +79,6 @@
 
 * [Implementing a tiny CPU rasterizer](https://lisyarus.github.io/blog/posts/implementing-a-tiny-cpu-rasterizer-part-1.html)
 * https://github.com/ssloy/tinyrenderer/wiki/Lesson-0:-getting-started
-* https://github.com/Angelo1211/SoftwareRenderer
 * https://github.com/zauonlok/renderer
 
 * [Craft: Minecraft clone written in C]https://github.com/fogleman/Craft)

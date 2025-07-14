@@ -119,12 +119,12 @@ M * Vec{i,j,k,1}
 
 */
 viewport :: proc(x, y, w, h, depth: f32) -> Mat4 {
-	m: Mat4
-	for i in 0 ..< 4 do for j in 0 ..< 4 do m[i][j] = 0
+	m := glsl.identity(Mat4)
+
 	m[0][0] = w / 2.0
 	m[1][1] = h / 2.0
 	m[2][2] = depth / 2.0
-	m[3][3] = 1.0
+
 	m[0][3] = x + w / 2.0
 	m[1][3] = y + h / 2.0
 	m[2][3] = depth / 2.0
@@ -149,12 +149,7 @@ lookat :: proc(eye, center, up: Vec3f) -> Mat4 {
 }
 
 projection :: proc(coeff: f32) -> Mat4 {
-	m: Mat4
-	for i in 0 ..< 4 do for j in 0 ..< 4 do m[i][j] = 0
-	m[0][0] = 1
-	m[1][1] = 1
-	m[2][2] = 1
-	m[3][3] = 1
+	m := glsl.identity(Mat4)
 	m[3][2] = coeff // -1.0 / camera_z
 	return m
 }
