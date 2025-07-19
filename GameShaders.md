@@ -16,6 +16,9 @@
 * [Animal Crossing, wobbly leaves, pivot caching.](https://www.youtube.com/watch?v=V1nkv8g-oi0)
 * [Vertex animation textures, beanbags and boneless animations.](https://www.youtube.com/watch?v=NQ5Dllbxbz4)
 
+## Acerola
+
+* [Why Did PS1 Games Look Like That?](https://www.youtube.com/watch?v=y84bG19sg6U)
 
 ## Ned Makes Games
 
@@ -40,3 +43,7 @@
 * https://emildziewanowski.com/voxelization/
 * https://emildziewanowski.com/flowfields/
 * https://emildziewanowski.com/flat-planets/
+
+## Godot
+
+* [How to Achieve PS1 and VHS-Style Graphics in Godot | Godot 4 Tutorial](https://www.youtube.com/watch?v=Yt15YJqYf8o)
