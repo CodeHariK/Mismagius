@@ -1,5 +1,7 @@
 ## Webgpu
 
+* [WebGPU Unleashed: A Practical Tutorial](https://shi-yan.github.io/webgpuunleashed/)
+
 https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API
 
 * https://webgpu.github.io/webgpu-samples/
@@ -39,22 +41,6 @@ https://github.com/mrdoob/three.js/wiki/Three.js-Shading-Language
 ## Zig Gamedev
 
 * [Zig Fighting Game Streams](https://www.youtube.com/playlist?list=PLvc15SkZM1FCkxyeRpUjFCT2hlKQ_UC_G)
-
-## Procedural Animation
-
-* [The Procedural Animation of Gibbon: Beyond the Trees - Wolfire Games](https://www.youtube.com/watch?v=KCKdGlpsdlo&ab_channel=WolfireGames)
-* [Making Fluid and Powerful Animations For 'Skullgirls'](https://www.youtube.com/watch?v=Mw0h9WmBlsw&ab_channel=GDC2025)
-* [The Rain World Animation Process](https://www.youtube.com/watch?v=sVntwsrjNe4&ab_channel=GDC2025)
-* [Animation Bootcamp: An Indie Approach to Procedural Animation](https://www.youtube.com/watch?v=LNidsMesxSE&ab_channel=GDC2025)
-* [IK Rig: Procedural Pose Animation](https://www.youtube.com/watch?v=KLjTU0yKS00&ab_channel=GDC2025)
-
-* [I Spent a Week Making an AI's Video Game Idea](https://www.youtube.com/watch?v=PGk0rnyTa1U&ab_channel=SebastianLague)
-
-* [I Made a Procedural Snake Game in Godot](https://www.youtube.com/watch?v=T73lvhhw_rA&ab_channel=RachelfTech)
-
-* [Procedural Animation in Unity: Environment Interactions [FINAL]](https://www.youtube.com/watch?v=J2Dr_l4ISfU&ab_channel=iHeartGameDev)
-
-* https://zalo.github.io/blog/inverse-kinematics/
 
 ## Procedural Music
 

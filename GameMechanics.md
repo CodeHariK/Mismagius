@@ -27,7 +27,3 @@
 ## Mario
 
 * [Planetary Gravity is CHEAP](https://www.youtube.com/watch?v=r-2iIBmXULI)
-
-## Godot
-
-* [IK godot](https://www.youtube.com/watch?v=D4Ulziwvfh0&ab_channel=Lukky)

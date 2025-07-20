@@ -1,3 +1,7 @@
+##
+
+* [Shaders Monthly](https://www.youtube.com/playlist?list=PL8vNj3osX2PzZ-cNSqhA8G6C1-Li5-Ck8)
+
 ## Light
 
 * [A better point light attenuation function](https://lisyarus.github.io/blog/posts/point-light-attenuation.html)
@@ -27,6 +31,9 @@
 
 ## [Ben Cloward](https://www.youtube.com/@BenCloward/playlists)
 
+## TNTC
+
+* [Multiple Worlds, One Screen: recreating SplitFiction’s Trick in Unity](https://www.youtube.com/watch?v=PgCiQHmZFBE)
 
 ## Gabriel
 
@@ -47,3 +54,9 @@
 ## Godot
 
 * [How to Achieve PS1 and VHS-Style Graphics in Godot | Godot 4 Tutorial](https://www.youtube.com/watch?v=Yt15YJqYf8o)
+
+## Unreal
+
+* [Shader Graph Basics](https://www.youtube.com/playlist?list=PL78XDi0TS4lEBWa2Hpzg2SRC5njCcKydl)
+* [Custom Lighting Models](https://www.youtube.com/playlist?list=PL78XDi0TS4lGnGa7L2X4o3UV-XYZEKNwj)
+* [Advanced Materials](https://www.youtube.com/playlist?list=PL78XDi0TS4lGqHdLQGR2GHne85i9PebbN)

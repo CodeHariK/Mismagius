@@ -2,6 +2,9 @@
 
 * [Essence of linear algebra](https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab)
 * [Linear Algebra makes sense](https://www.youtube.com/playlist?list=PLg-OiIIbfPj3Wldtb0QfV0Yse8tL2nLGm)
+* [Dear linear algebra students, This is what matrices (and matrix manipulation) really look like](https://www.youtube.com/watch?v=4csuTO7UTMo)
+* [Why is the determinant like that?](https://www.youtube.com/watch?v=Sv7VseMsOQc)
+* [The applications of eigenvectors and eigenvalues](https://www.youtube.com/watch?v=i8FukKfMKCI)
 
 ## Projective Geometry
 

@@ -16,7 +16,8 @@
 
 ## Texture
 
-* [This is how texturing really works | Procedural Texturing, Episode 1](https://www.youtube.com/playlist?list=PL4jUKkE-tZLXCZjMuYAuXjr-gFYu-SO52)
+* [Procedural Texturing Series](https://www.youtube.com/playlist?list=PL4jUKkE-tZLXCZjMuYAuXjr-gFYu-SO52)
+
 * [GPU Texture Compression](https://www.youtube.com/watch?v=3H-HGlsC0NY)
 
 ## Procedural
