@@ -29,7 +29,6 @@
 * [IK godot](https://www.youtube.com/watch?v=D4Ulziwvfh0&ab_channel=Lukky)
 * [Giving Personality to Procedural Animations using Math](https://www.youtube.com/watch?v=KPoeNZZ6H4s&ab_channel=t3ssel8r)
 
-* [The Procedural Animation of Gibbon: Beyond the Trees - Wolfire Games](https://www.youtube.com/watch?v=KCKdGlpsdlo&ab_channel=WolfireGames)
 * [Making Fluid and Powerful Animations For 'Skullgirls'](https://www.youtube.com/watch?v=Mw0h9WmBlsw&ab_channel=GDC2025)
 * [The Rain World Animation Process](https://www.youtube.com/watch?v=sVntwsrjNe4&ab_channel=GDC2025)
 * [Animation Bootcamp: An Indie Approach to Procedural Animation](https://www.youtube.com/watch?v=LNidsMesxSE&ab_channel=GDC2025)
