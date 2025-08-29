@@ -1,7 +1,3 @@
-## Algorithm
-
-* [How Clay's UI Layout Algorithm Works](https://www.youtube.com/watch?v=by9lQvpvMIc)
-
 ## 
 
 * [Blender Compositing for NPR Course](https://www.youtube.com/playlist?list=PLVQZUYd6963VYnC0QbDtqmY8_wPcL2VhW)
